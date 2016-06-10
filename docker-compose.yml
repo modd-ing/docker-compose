@@ -28,14 +28,33 @@ services:
       - "8888:8080"
       - "28015"
 
+  rabbitmq-api:
+    build: ../rabbitmq-api
+    ports:
+      - "15672:15672"
+
   api-server:
     build: ../api-server
     command: pm2 start pm2dev.json --no-daemon
     environment:
       NODE_ENV: development
+    links:
+      - rabbitmq-api:rabbitmq-api
     ports:
       - "3000:3000"
     restart: on-failure:10
     volumes:
     - ../api-server:/home/service/api-server
     - /home/service/api-server/node_modules
+
+  api-users-read:
+    build: ../api-users-read
+    command: pm2 start pm2dev.json --no-daemon
+    environment:
+      NODE_ENV: development
+    links:
+      - rabbitmq-api:rabbitmq-api
+    restart: on-failure:10
+    volumes:
+    - ./api-users-read:/home/service/api-users-read
+    - /home/service/api-users-read/node_modules

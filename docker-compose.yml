@@ -1,0 +1,41 @@
+version: "2"
+
+services:
+  rethinkdb-1:
+    build: ../rethinkdb
+    command: rethinkdb --join rethinkdb-2:29015 --join rethinkdb-3:29015 --bind all
+    volumes:
+      - ~/rethinkdb-1:/data
+
+  rethinkdb-2:
+    build: ../rethinkdb
+    command: rethinkdb --join rethinkdb-1:29015 --join rethinkdb-3:29015 --bind all
+    volumes:
+      - ~/rethinkdb-2:/data
+
+  rethinkdb-3:
+    build: ../rethinkdb
+    command: rethinkdb --join rethinkdb-1:29015 --join rethinkdb-2:29015 --bind all
+    volumes:
+      - ~/rethinkdb-3:/data
+
+  rethinkdb-proxy:
+    build: ../rethinkdb
+    command: rethinkdb proxy --join rethinkdb-1:29015 --join rethinkdb-2:29015 --join rethinkdb-3:29015 --bind all
+    volumes:
+      - ~/rethinkdb-proxy:/data
+    ports:
+      - "8888:8080"
+      - "28015"
+
+  api-server:
+    build: ../api-server
+    command: pm2 start pm2dev.json --no-daemon
+    environment:
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    restart: on-failure:10
+    volumes:
+    - ../api-server:/home/service/api-server
+    - /home/service/api-server/node_modules

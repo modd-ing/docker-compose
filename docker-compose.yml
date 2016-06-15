@@ -56,5 +56,17 @@ services:
       - rabbitmq-api:rabbitmq-api
     restart: on-failure:10
     volumes:
-    - ./api-users-read:/home/service/api-users-read
+    - ../api-users-read:/home/service/api-users-read
     - /home/service/api-users-read/node_modules
+
+  api-users-write:
+    build: ../api-users-write
+    command: pm2 start pm2dev.json --no-daemon
+    environment:
+      NODE_ENV: development
+    links:
+      - rabbitmq-api:rabbitmq-api
+    restart: on-failure:10
+    volumes:
+    - ../api-users-write:/home/service/api-users-write
+    - /home/service/api-users-write/node_modules

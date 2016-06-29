@@ -33,6 +33,13 @@ services:
     ports:
       - "15672:15672"
 
+  redis-api:
+    build: ../redis-api
+    volumes:
+      - ~/redis:/data
+    ports:
+      - "6379:6379"
+
   api-server:
     build: ../api-server
     command: pm2 start pm2dev.json --no-daemon
@@ -40,6 +47,7 @@ services:
       NODE_ENV: development
     links:
       - rabbitmq-api:rabbitmq-api
+      - redis-api:redis-api
     ports:
       - "3000:3000"
     restart: on-failure:10

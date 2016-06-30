@@ -78,3 +78,15 @@ services:
     volumes:
     - ../api-users-write:/home/service/api-users-write
     - /home/service/api-users-write/node_modules
+
+  api-authorize:
+    build: ../api-authorize
+    command: pm2 start pm2dev.json --no-daemon
+    environment:
+      NODE_ENV: development
+    links:
+      - rabbitmq-api:rabbitmq-api
+    restart: on-failure:10
+    volumes:
+    - ../api-authorize:/home/service/api-authorize
+    - /home/service/api-authorize/node_modules

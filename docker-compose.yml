@@ -90,3 +90,27 @@ services:
     volumes:
     - ../api-authorize:/home/service/api-authorize
     - /home/service/api-authorize/node_modules
+
+  api-attachments-read:
+    build: ../api-attachments-read
+    command: pm2 start pm2dev.json --no-daemon
+    environment:
+      NODE_ENV: development
+    links:
+      - rabbitmq-api:rabbitmq-api
+    restart: on-failure:10
+    volumes:
+    - ../api-attachments-read:/home/service/api-attachments-read
+    - /home/service/api-attachments-read/node_modules
+
+  api-attachments-write:
+    build: ../api-attachments-write
+    command: pm2 start pm2dev.json --no-daemon
+    environment:
+      NODE_ENV: development
+    links:
+      - rabbitmq-api:rabbitmq-api
+    restart: on-failure:10
+    volumes:
+    - ../api-attachments-write:/home/service/api-attachments-write
+    - /home/service/api-attachments-write/node_modules
